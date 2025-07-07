@@ -35,10 +35,10 @@ jobs:
         - name: Install dependencies
           run: pnpm install --frozen-lockfile
 
-        - name: Lint
-          run: pnpm lint
+        - name: Check code for linting & formatting issues
+          run: pnpm check:ci
 
-        - name: Build
+        - name: Build the project
           run: pnpm build
 
         - name: Publish to npm
