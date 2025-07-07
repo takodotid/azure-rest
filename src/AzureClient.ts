@@ -68,78 +68,60 @@ export class AzureClient {
 	/**
 	 * Sends a GET request to the Azure REST API.
 	 * @param path The API path
-	 * @param init Optional fetch options
+	 * @param options Fetch options, including headers
 	 * @returns The fetch Response object
 	 */
-	public get(path: string, init?: RequestInit) {
-		return this.sendRequest(path, { ...init, method: "GET" });
+	public get(path: string, options?: Exclude<RequestInit, "method">) {
+		return this.sendRequest(path, { ...options, method: "GET" });
 	}
 
 	/**
 	 * Sends a POST request with a JSON body to the Azure REST API.
 	 * @param path The API path
-	 * @param body The request body (will be JSON.stringified)
-	 * @param init Optional fetch options
+	 * @param options Fetch options, including body and headers
 	 * @returns The fetch Response object
 	 */
-	public post(path: string, body?: any, init?: RequestInit) {
+	public post(path: string, options?: Exclude<RequestInit, "method">) {
 		return this.sendRequest(path, {
-			...init,
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				...init?.headers
-			},
-			body
+			...options,
+			method: "POST"
 		});
 	}
 
 	/**
 	 * Sends a PUT request with a JSON body to the Azure REST API.
 	 * @param path The API path
-	 * @param body The request body (will be JSON.stringified)
-	 * @param init Optional fetch options
+	 * @param options Fetch options, including body and headers
 	 * @returns The fetch Response object
 	 */
-	public put(path: string, body?: any, init?: RequestInit) {
+	public put(path: string, options?: Exclude<RequestInit, "method">) {
 		return this.sendRequest(path, {
-			...init,
-			method: "PUT",
-			headers: {
-				"Content-Type": "application/json",
-				...init?.headers
-			},
-			body
+			...options,
+			method: "PUT"
 		});
 	}
 
 	/**
 	 * Sends a PATCH request with a JSON body to the Azure REST API.
 	 * @param path The API path
-	 * @param body The request body (will be JSON.stringified)
-	 * @param init Optional fetch options
+	 * @param options Fetch options, including body and headers
 	 * @returns The fetch Response object
 	 */
-	public patch(path: string, body?: any, init?: RequestInit) {
+	public patch(path: string, options?: Exclude<RequestInit, "method">) {
 		return this.sendRequest(path, {
-			...init,
-			method: "PATCH",
-			headers: {
-				"Content-Type": "application/json",
-				...init?.headers
-			},
-			body
+			...options,
+			method: "PATCH"
 		});
 	}
 
 	/**
 	 * Sends a DELETE request to the Azure REST API.
 	 * @param path The API path
-	 * @param init Optional fetch options
+	 * @param options Fetch options, including body and headers
 	 * @returns The fetch Response object
 	 */
-	public delete(path: string, init?: RequestInit) {
-		return this.sendRequest(path, { ...init, method: "DELETE" });
+	public delete(path: string, options?: Exclude<RequestInit, "method">) {
+		return this.sendRequest(path, { ...options, method: "DELETE" });
 	}
 
 	/**
