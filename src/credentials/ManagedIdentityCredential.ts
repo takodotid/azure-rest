@@ -1,5 +1,5 @@
-import type { OAuth2TokenResponse } from "../ServicePrincipalCredential.js";
 import type { AzureCredential } from "./AzureCredential.js";
+import type { OAuth2TokenResponse } from "./ServicePrincipalCredential.js";
 
 /**
  * Options for configuring ManagedIdentityCredential.
