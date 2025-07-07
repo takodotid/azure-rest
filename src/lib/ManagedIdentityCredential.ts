@@ -48,18 +48,23 @@ export class ManagedIdentityCredential implements AzureCredential {
 		// Add timeout to fetch (default 500ms, can override via options)
 		const timeoutMs = this.options.timeoutMs ?? 300;
 		const controller = new AbortController();
-		const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+		// Manual timeout fallback: Promise.race to guarantee timeout even if fetch/AbortController fails (e.g., network hang)
+		const timeoutPromise = new Promise<never>((_, reject) => {
+			setTimeout(() => {
+				controller.abort(); // still try to abort fetch
+				reject(new Error(`ManagedIdentityCredential: Timed out after ${timeoutMs}ms waiting for metadata endpoint (${url})`));
+			}, timeoutMs);
+		});
 
 		let response: Response;
 		try {
-			response = await fetch(url, { headers, signal: controller.signal });
+			response = await Promise.race([fetch(url, { headers, signal: controller.signal }), timeoutPromise]);
 		} catch (err: any) {
-			if (err.name === "AbortError") {
+			if (err.name === "AbortError" || /Timed out/.test(err.message)) {
 				throw new Error(`ManagedIdentityCredential: Timed out after ${timeoutMs}ms waiting for metadata endpoint (${url})`);
 			}
 			throw err;
-		} finally {
-			clearTimeout(timeout);
 		}
 
 		if (!response.ok) {
