@@ -22,10 +22,16 @@
 	],
 	"type": "module",
 	"main": "dist/index.js",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
 	"scripts": {
 		"check": "biome check",
 		"check:ci": "biome ci",
-		"compile": "tsc"
+		"compile": "tsc && tsup"
 	},
 	"commitlint": {
 		"extends": [
@@ -44,6 +50,7 @@
 		"@tsconfig/node-lts": "^22.0.2",
 		"@types/node": "^24.0.10",
 		"lefthook": "^1.11.16",
+		"tsup": "^8.5.0",
 		"typescript": "^5.8.3"
 	},
 	"packageManager": "pnpm@10.12.4"
