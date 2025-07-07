@@ -1,6 +1,6 @@
 {
 	"name": "@takodotid/azure-rest",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Minimal Azure REST client with Entra ID (formerly AAD) authentication. Zero external dependencies.",
 	"keywords": [
 		"azure",
