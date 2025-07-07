@@ -27,11 +27,11 @@ export type OAuth2TokenResponse = {
 /**
  * Options for configuring ServicePrincipalCredential.
  *
- * @property clientId - The Azure AD application (client) ID
- * @property clientSecret - The client secret or JWT assertion (for federated)
- * @property tenantId - The Azure AD tenant ID
- * @property authorityHost - (Optional) The Azure AD authority host
- * @property federated - Whether to use federated (JWT) auth
+ * @property clientId - The Azure AD application (client) ID.
+ * @property clientSecret - The client secret or JWT assertion (for federated).
+ * @property tenantId - The Azure AD tenant ID.
+ * @property authorityHost - (Optional) The Azure AD authority host. Defaults to "https://login.microsoftonline.com".
+ * @property federated - Whether to use federated (JWT) auth. If true, clientSecret is treated as a JWT assertion.
  */
 export type ServicePrincipalCredentialOption = {
 	clientId: string;
@@ -109,14 +109,20 @@ export class ServicePrincipalCredential implements AzureCredential {
 
 	/**
 	 * Instantiates ServicePrincipalCredential using environment variables.
+	 * This expects the following environment variables to be set:
+	 * - AZURE_CLIENT_ID: The Azure AD application (client) ID
+	 * - AZURE_CLIENT_SECRET: The client secret
+	 * - AZURE_TENANT_ID: The Azure AD tenant ID
+	 * - AZURE_USE_FEDERATED_AUTH: Optional, if set to "true", uses federated authentication (JWT assertion).
 	 * @returns ServicePrincipalCredential instance
 	 */
 	public static fromEnv() {
 		return new ServicePrincipalCredential({
+			authorityHost: process.env.AZURE_AUTHORITY_HOST,
 			clientId: process.env.AZURE_CLIENT_ID,
 			clientSecret: process.env.AZURE_CLIENT_SECRET,
 			tenantId: process.env.AZURE_TENANT_ID,
-			federated: false
+			federated: process.env.AZURE_USE_FEDERATED_AUTH === "true"
 		});
 	}
 }
@@ -127,6 +133,7 @@ declare global {
 			AZURE_CLIENT_ID: string;
 			AZURE_CLIENT_SECRET: string;
 			AZURE_TENANT_ID: string;
+			AZURE_USE_FEDERATED_AUTH: "true" | "false"; // Optional, defaults to "false"
 		}
 	}
 }

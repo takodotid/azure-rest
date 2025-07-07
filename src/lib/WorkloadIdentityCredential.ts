@@ -47,6 +47,11 @@ export class WorkloadIdentityCredential implements AzureCredential {
 
 	/**
 	 * Instantiates WorkloadIdentityCredential using environment variables.
+	 * This expects the following environment variables to be set:
+	 * - AZURE_AUTHORITY_HOST: The Azure AD authority host (optional)
+	 * - AZURE_CLIENT_ID: The Azure AD application (client) ID
+	 * - AZURE_FEDERATED_TOKEN_FILE: Path to the federated token file
+	 * - AZURE_TENANT_ID: The Azure AD tenant ID
 	 * @returns WorkloadIdentityCredential instance
 	 */
 	public static fromEnv() {

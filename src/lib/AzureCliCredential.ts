@@ -24,7 +24,7 @@ export type CLITokenResponse = {
 /**
  * Options for AzureCliCredential.
  *
- * @property tenantId - The Azure tenant ID to use for authentication
+ * @property tenantId - The Azure tenant ID to use for authentication.
  */
 export type AzureCLICredentialOptions = {
 	tenantId: string;
@@ -119,6 +119,8 @@ export class AzureCliCredential implements AzureCredential {
 
 	/**
 	 * Instantiates AzureCliCredential using the AZURE_TENANT_ID environment variable.
+	 * This expects the following environment variable to be set:
+	 * - AZURE_TENANT_ID: The Azure tenant ID to use for authentication.
 	 * @returns AzureCliCredential instance
 	 */
 	public static fromEnv() {

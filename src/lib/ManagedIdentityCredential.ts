@@ -4,10 +4,13 @@ import type { OAuth2TokenResponse } from "./ServicePrincipalCredential.js";
 /**
  * Options for configuring ManagedIdentityCredential.
  *
- * @property clientId - (Optional) The user-assigned managed identity client ID
+ * @property clientId - (Optional) The user-assigned managed identity client ID.
+ * @property timeoutMs - (Optional) Timeout in milliseconds for metadata endpoint fetch. Default: 300ms.
  */
 export type ManagedIdentityCredentialOptions = {
+	identityEndpoint?: string; // Optional: custom endpoint, defaults to Azure's default metadata endpoint
 	clientId?: string;
+	timeoutMs?: number; // Optional: custom timeout for fetch
 };
 
 /**
@@ -29,7 +32,7 @@ export class ManagedIdentityCredential implements AzureCredential {
 	 * @throws If the endpoint is unavailable or token request fails
 	 */
 	public async getToken(scope: string) {
-		const endpoint = process.env.AZURE_MANAGED_IDENTITY_ENDPOINT || process.env.IDENTITY_ENDPOINT || "http://169.254.169.254/metadata/identity/oauth2/token";
+		const endpoint = this.options.identityEndpoint || "http://169.254.169.254/metadata/identity/oauth2/token";
 		const apiVersion = "2018-02-01";
 		const params = new URLSearchParams({
 			resource: scope.replace(".default", ""),
@@ -42,7 +45,23 @@ export class ManagedIdentityCredential implements AzureCredential {
 		const url = `${endpoint}?${params.toString()}`;
 		const headers = { Metadata: "true" };
 
-		const response = await fetch(url, { headers });
+		// Add timeout to fetch (default 500ms, can override via options)
+		const timeoutMs = this.options.timeoutMs ?? 300;
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+		let response: Response;
+		try {
+			response = await fetch(url, { headers, signal: controller.signal });
+		} catch (err: any) {
+			if (err.name === "AbortError") {
+				throw new Error(`ManagedIdentityCredential: Timed out after ${timeoutMs}ms waiting for metadata endpoint (${url})`);
+			}
+			throw err;
+		} finally {
+			clearTimeout(timeout);
+		}
+
 		if (!response.ok) {
 			throw new Error(`ManagedIdentityCredential: Failed to get token: ${await response.text()}`);
 		}
@@ -58,10 +77,18 @@ export class ManagedIdentityCredential implements AzureCredential {
 
 	/**
 	 * Instantiates ManagedIdentityCredential using environment variables.
+	 * This expects the following environment variables to be set:
+	 * - AZURE_CLIENT_ID: The user-assigned managed identity client ID. This is optional for system-assigned identities.
+	 * - AZURE_MANAGED_IDENTITY_ENDPOINT or IDENTITY_ENDPOINT: The managed identity endpoint (optional, defaults to http://169.254.169.254/metadata/identity/oauth2/token)
+	 * - AZURE_MANAGED_IDENTITY_TIMEOUT_MS: Custom timeout for metadata endpoint fetch in milliseconds (optional).
 	 * @returns ManagedIdentityCredential instance
 	 */
 	public static fromEnv() {
-		return new ManagedIdentityCredential({ clientId: process.env.AZURE_CLIENT_ID });
+		return new ManagedIdentityCredential({
+			identityEndpoint: process.env.AZURE_MANAGED_IDENTITY_ENDPOINT || process.env.IDENTITY_ENDPOINT,
+			clientId: process.env.AZURE_CLIENT_ID,
+			timeoutMs: process.env.AZURE_MANAGED_IDENTITY_TIMEOUT_MS ? Number.parseInt(process.env.AZURE_MANAGED_IDENTITY_TIMEOUT_MS) : undefined
+		});
 	}
 }
 
@@ -69,6 +96,7 @@ declare global {
 	namespace NodeJS {
 		interface ProcessEnv {
 			AZURE_MANAGED_IDENTITY_ENDPOINT?: string;
+			AZURE_MANAGED_IDENTITY_TIMEOUT_MS?: string; // Optional: custom timeout for fetch
 			IDENTITY_ENDPOINT?: string;
 		}
 	}
