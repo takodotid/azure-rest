@@ -35,11 +35,11 @@ export class AzureClient {
 	/**
 	 * Sends a request to the Azure REST API, handling token refresh and retries.
 	 * @param path The API path (relative to baseUrl)
-	 * @param init Optional fetch options
+	 * @param options Optional fetch options
 	 * @returns The fetch Response object
 	 * @throws If token refresh fails after max retries
 	 */
-	public async sendRequest(path: string, init?: RequestInit): Promise<Response> {
+	public async sendRequest(path: string, options?: RequestInit): Promise<Response> {
 		for (let i = 0; i <= AzureClient.MAX_TOKEN_RETRIES; i++) {
 			if (this.token && this.token.expiresAt > new Date()) break;
 			if (i === AzureClient.MAX_TOKEN_RETRIES) {
@@ -57,10 +57,10 @@ export class AzureClient {
 		const url = `${baseUrl}/${relPath}`;
 
 		return fetch(url, {
-			...init,
+			...options,
 			headers: {
 				...(this.options.credential.builder ? this.options.credential.builder(this.token) : { Authorization: `Bearer ${this.token.accessToken}` }),
-				...init?.headers
+				...options?.headers
 			}
 		});
 	}
