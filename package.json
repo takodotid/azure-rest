@@ -31,7 +31,7 @@
 	"scripts": {
 		"check": "biome check",
 		"check:ci": "biome ci",
-		"compile": "tsc && tsup"
+		"build": "tsc && tsup"
 	},
 	"commitlint": {
 		"extends": [
