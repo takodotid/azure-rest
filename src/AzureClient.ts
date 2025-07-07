@@ -33,13 +33,72 @@ export class AzureClient {
 	}
 
 	/**
+	 * Sends a GET request to the Azure REST API.
+	 * @param path The API path
+	 * @param options Fetch options, including headers
+	 * @returns The fetch Response object
+	 */
+	public get(path: string, options?: Exclude<RequestInit, "method">) {
+		return this.request(path, { ...options, method: "GET" });
+	}
+
+	/**
+	 * Sends a POST request with a JSON body to the Azure REST API.
+	 * @param path The API path
+	 * @param options Fetch options, including body and headers
+	 * @returns The fetch Response object
+	 */
+	public post(path: string, options?: Exclude<RequestInit, "method">) {
+		return this.request(path, {
+			...options,
+			method: "POST"
+		});
+	}
+
+	/**
+	 * Sends a PUT request with a JSON body to the Azure REST API.
+	 * @param path The API path
+	 * @param options Fetch options, including body and headers
+	 * @returns The fetch Response object
+	 */
+	public put(path: string, options?: Exclude<RequestInit, "method">) {
+		return this.request(path, {
+			...options,
+			method: "PUT"
+		});
+	}
+
+	/**
+	 * Sends a PATCH request with a JSON body to the Azure REST API.
+	 * @param path The API path
+	 * @param options Fetch options, including body and headers
+	 * @returns The fetch Response object
+	 */
+	public patch(path: string, options?: Exclude<RequestInit, "method">) {
+		return this.request(path, {
+			...options,
+			method: "PATCH"
+		});
+	}
+
+	/**
+	 * Sends a DELETE request to the Azure REST API.
+	 * @param path The API path
+	 * @param options Fetch options, including body and headers
+	 * @returns The fetch Response object
+	 */
+	public delete(path: string, options?: Exclude<RequestInit, "method">) {
+		return this.request(path, { ...options, method: "DELETE" });
+	}
+
+	/**
 	 * Sends a request to the Azure REST API, handling token refresh and retries.
 	 * @param path The API path (relative to baseUrl)
 	 * @param options Optional fetch options
 	 * @returns The fetch Response object
 	 * @throws If token refresh fails after max retries
 	 */
-	public async sendRequest(path: string, options?: RequestInit): Promise<Response> {
+	public async request(path: string, options?: RequestInit): Promise<Response> {
 		for (let i = 0; i <= AzureClient.MAX_TOKEN_RETRIES; i++) {
 			if (this.token && this.token.expiresAt > new Date()) break;
 			if (i === AzureClient.MAX_TOKEN_RETRIES) {
@@ -63,65 +122,6 @@ export class AzureClient {
 				...options?.headers
 			}
 		});
-	}
-
-	/**
-	 * Sends a GET request to the Azure REST API.
-	 * @param path The API path
-	 * @param options Fetch options, including headers
-	 * @returns The fetch Response object
-	 */
-	public get(path: string, options?: Exclude<RequestInit, "method">) {
-		return this.sendRequest(path, { ...options, method: "GET" });
-	}
-
-	/**
-	 * Sends a POST request with a JSON body to the Azure REST API.
-	 * @param path The API path
-	 * @param options Fetch options, including body and headers
-	 * @returns The fetch Response object
-	 */
-	public post(path: string, options?: Exclude<RequestInit, "method">) {
-		return this.sendRequest(path, {
-			...options,
-			method: "POST"
-		});
-	}
-
-	/**
-	 * Sends a PUT request with a JSON body to the Azure REST API.
-	 * @param path The API path
-	 * @param options Fetch options, including body and headers
-	 * @returns The fetch Response object
-	 */
-	public put(path: string, options?: Exclude<RequestInit, "method">) {
-		return this.sendRequest(path, {
-			...options,
-			method: "PUT"
-		});
-	}
-
-	/**
-	 * Sends a PATCH request with a JSON body to the Azure REST API.
-	 * @param path The API path
-	 * @param options Fetch options, including body and headers
-	 * @returns The fetch Response object
-	 */
-	public patch(path: string, options?: Exclude<RequestInit, "method">) {
-		return this.sendRequest(path, {
-			...options,
-			method: "PATCH"
-		});
-	}
-
-	/**
-	 * Sends a DELETE request to the Azure REST API.
-	 * @param path The API path
-	 * @param options Fetch options, including body and headers
-	 * @returns The fetch Response object
-	 */
-	public delete(path: string, options?: Exclude<RequestInit, "method">) {
-		return this.sendRequest(path, { ...options, method: "DELETE" });
 	}
 
 	/**
