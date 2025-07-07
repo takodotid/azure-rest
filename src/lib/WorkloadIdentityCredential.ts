@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import type { AzureCredential } from "./AzureCredential.js";
 import { ServicePrincipalCredential } from "./ServicePrincipalCredential.js";
 
@@ -35,14 +35,17 @@ export class WorkloadIdentityCredential implements AzureCredential {
 	 * @throws If the federated token file does not exist
 	 */
 	public async getToken(scope: string) {
-		if (!existsSync(this.options.federatedTokenFile)) {
-			throw new Error("WorkloadIdentityCredential: The federated token file does not exist.");
+		try {
+			const token = await readFile(this.options.federatedTokenFile, "utf-8");
+			const servicePrincipal = new ServicePrincipalCredential({ ...this.options, clientSecret: token, federated: true });
+
+			return servicePrincipal.getToken(scope);
+		} catch (err) {
+			if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+				throw new Error(`WorkloadIdentityCredential: Federated token file not found at ${this.options.federatedTokenFile}`);
+			}
+			throw new Error(`WorkloadIdentityCredential: Failed to get token: ${(err as Error).message}`);
 		}
-
-		const token = readFileSync(this.options.federatedTokenFile, "utf-8");
-		const servicePrincipal = new ServicePrincipalCredential({ ...this.options, clientSecret: token, federated: true });
-
-		return servicePrincipal.getToken(scope);
 	}
 
 	/**
