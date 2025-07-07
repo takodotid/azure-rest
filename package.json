@@ -1,18 +1,50 @@
 {
-  "name": "@takodotid/azure-rest",
-  "version": "0.1.0",
-  "description": "Minimal Azure REST client with Entra ID (formerly AAD) authentication. Zero external dependencies.",
-  "main": "dist/index.js",
-  "scripts": {},
-  "keywords": ["azure", "rest", "entra-id", "aad", "authentication", "minimal", "zero-dependencies"],
-  "author": "PT Hobimu Jadi Cuan (Tako) <developer@tako.id>",
-  "contributors": [
-    {
-      "name": "Hazmi Alfarizqi",
-      "email": "hzmi@tako.id",
-      "url": "https://github.com/Hazmi35"
-    }
-  ],
-  "license": "MIT",
-  "packageManager": "pnpm@10.12.4"
+	"name": "@takodotid/azure-rest",
+	"version": "0.1.0",
+	"description": "Minimal Azure REST client with Entra ID (formerly AAD) authentication. Zero external dependencies.",
+	"keywords": [
+		"azure",
+		"rest",
+		"entra-id",
+		"aad",
+		"authentication",
+		"minimal",
+		"zero-dependencies"
+	],
+	"license": "MIT",
+	"author": "PT Hobimu Jadi Cuan (Tako) <developer@tako.id>",
+	"contributors": [
+		{
+			"name": "Hazmi Alfarizqi",
+			"email": "hzmi@tako.id",
+			"url": "https://github.com/Hazmi35"
+		}
+	],
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"check": "biome check",
+		"check:ci": "biome ci",
+		"compile": "tsc"
+	},
+	"commitlint": {
+		"extends": [
+			"@commitlint/config-conventional"
+		],
+		"rules": {
+			"body-max-line-length": [
+				0
+			]
+		}
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.0.6",
+		"@commitlint/cli": "^19.8.1",
+		"@commitlint/config-conventional": "^19.8.1",
+		"@tsconfig/node-lts": "^22.0.2",
+		"@types/node": "^24.0.10",
+		"lefthook": "^1.11.16",
+		"typescript": "^5.8.3"
+	},
+	"packageManager": "pnpm@10.12.4"
 }
