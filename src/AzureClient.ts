@@ -90,7 +90,7 @@ export class AzureClient {
 				"Content-Type": "application/json",
 				...init?.headers
 			},
-			body: body !== undefined ? JSON.stringify(body) : undefined
+			body
 		});
 	}
 
@@ -109,7 +109,7 @@ export class AzureClient {
 				"Content-Type": "application/json",
 				...init?.headers
 			},
-			body: body !== undefined ? JSON.stringify(body) : undefined
+			body
 		});
 	}
 
@@ -128,7 +128,7 @@ export class AzureClient {
 				"Content-Type": "application/json",
 				...init?.headers
 			},
-			body: body !== undefined ? JSON.stringify(body) : undefined
+			body
 		});
 	}
 
