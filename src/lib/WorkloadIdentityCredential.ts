@@ -1,5 +1,3 @@
-/* eslint-disable typescript/naming-convention */
-
 import { existsSync, readFileSync } from "node:fs";
 import type { AzureCredential } from "./AzureCredential.js";
 import { ServicePrincipalCredential } from "./ServicePrincipalCredential.js";

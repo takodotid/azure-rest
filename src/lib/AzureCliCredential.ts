@@ -73,7 +73,6 @@ export class AzureCliCredential implements AzureCredential {
 					"az",
 					["account", "get-access-token", "--output", "json", "--resource", scope.replace(".default", ""), "--tenant", this.options.tenantId],
 					{ cwd: process.cwd(), shell: true, timeout: 30_000 },
-					// eslint-disable-next-line promise/prefer-await-to-callbacks
 					(error, stdout, stderr) => {
 						if (error) {
 							reject(new Error(`Failed to get token: ${error.stack}`));
@@ -127,7 +126,6 @@ export class AzureCliCredential implements AzureCredential {
 
 declare global {
 	namespace NodeJS {
-		// eslint-disable-next-line typescript/consistent-type-definitions
 		interface ProcessEnv {
 			AZURE_TENANT_ID: string;
 		}

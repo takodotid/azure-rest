@@ -1,16 +1,15 @@
 {
-    "extends": "@tsconfig/node-lts",
-    "include": [
-        "src/**/*.ts",
-    ],
-    "compilerOptions": {
-        "outDir": "dist",
-        "rootDir": "src",
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
-        "esModuleInterop": true,
-        "strict": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true
-    }
+	"extends": "@tsconfig/node-lts",
+	"include": ["src/**/*.ts"],
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "src",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"esModuleInterop": true,
+		"strict": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"declaration": true
+	}
 }

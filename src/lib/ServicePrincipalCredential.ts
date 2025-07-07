@@ -1,5 +1,3 @@
-/* eslint-disable typescript/naming-convention */
-
 import { URLSearchParams } from "node:url";
 import type { AzureCredential } from "./AzureCredential.js";
 
