@@ -8,13 +8,15 @@ import type { AzureCredential } from "./AzureCredential.js";
  * @property accessToken - The access token string
  * @property expiresOn - Expiry date in RFC3339 format (legacy)
  * @property expires_on - Expiry as seconds since epoch (preferred)
+ * @property subscription - (Optional) Subscription ID, may not be present
  * @property tenant - Tenant ID
  * @property tokenType - Token type (usually 'Bearer')
  */
 export type CLITokenResponse = {
 	accessToken: string;
-	expiresOn: string; // RFC3339
+	expiresOn: string;
 	expires_on: string;
+	subscription?: string;
 	tenant: string;
 	tokenType: string;
 };
