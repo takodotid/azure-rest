@@ -1,4 +1,4 @@
-import type { AzureCredential, Credential } from "./lib/AzureCredential.js";
+import type { AzureCredential, Credential } from "./credentials/AzureCredential.js";
 
 /**
  * Options for configuring the AzureClient instance.

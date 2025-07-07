@@ -1,7 +1,7 @@
+import { ServicePrincipalCredential } from "../ServicePrincipalCredential.js";
 import { AzureCliCredential } from "./AzureCliCredential.js";
 import type { AzureCredential } from "./AzureCredential.js";
 import { ManagedIdentityCredential } from "./ManagedIdentityCredential.js";
-import { ServicePrincipalCredential } from "./ServicePrincipalCredential.js";
 import { WorkloadIdentityCredential } from "./WorkloadIdentityCredential.js";
 
 const credentialChain = [WorkloadIdentityCredential, ManagedIdentityCredential, ServicePrincipalCredential, AzureCliCredential];
