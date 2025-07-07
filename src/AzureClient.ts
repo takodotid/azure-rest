@@ -51,7 +51,12 @@ export class AzureClient {
 
 		if (!this.token) throw new Error("Token is unexpectedly null after refresh attempts");
 
-		return fetch(`${this.options.baseUrl}${path}`, {
+		// Normalize baseUrl and path to avoid double or missing slashes
+		const baseUrl = this.options.baseUrl.replace(/\/+$/, "");
+		const relPath = path.replace(/^\/+/, "");
+		const url = `${baseUrl}/${relPath}`;
+
+		return fetch(url, {
 			...init,
 			headers: {
 				...(this.options.credential.builder ? this.options.credential.builder(this.token) : { Authorization: `Bearer ${this.token.accessToken}` }),
