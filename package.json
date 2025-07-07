@@ -11,6 +11,10 @@
 		"minimal",
 		"zero-dependencies"
 	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/takodotid/azure-rest"
+	},
 	"license": "MIT",
 	"author": "PT Hobimu Jadi Cuan (Tako) <developer@tako.id>",
 	"contributors": [
