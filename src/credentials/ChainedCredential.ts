@@ -1,18 +1,18 @@
-import { ServicePrincipalCredential } from "../ServicePrincipalCredential.js";
 import { AzureCliCredential } from "./AzureCliCredential.js";
 import type { AzureCredential } from "./AzureCredential.js";
 import { ManagedIdentityCredential } from "./ManagedIdentityCredential.js";
+import { ServicePrincipalCredential } from "./ServicePrincipalCredential.js";
 import { WorkloadIdentityCredential } from "./WorkloadIdentityCredential.js";
 
 const credentialChain = [WorkloadIdentityCredential, ManagedIdentityCredential, ServicePrincipalCredential, AzureCliCredential];
 
 /**
- * DefaultChainedCredential tries multiple credential providers in order until one succeeds.
+ * ChainedCredential tries multiple credential providers in order until one succeeds.
  *
  * The chain is: WorkloadIdentityCredential → ManagedIdentityCredential → ServicePrincipalCredential → AzureCliCredential.
  * Useful for local dev, CI, and cloud environments with minimal config.
  */
-export class DefaultChainedCredential implements AzureCredential {
+export class ChainedCredential implements AzureCredential {
 	/**
 	 * Attempts to get an Azure access token using the first available credential in the chain.
 	 * @param scope The resource scope for the token
@@ -23,7 +23,7 @@ export class DefaultChainedCredential implements AzureCredential {
 		const errors: { name: string; error: Error }[] = [];
 		const debug = process.env.DEBUG?.includes("tako-azure-rest:credentials") || process.env.DEBUG?.includes("tako-azure-rest:*");
 		for (const Credential of credentialChain) {
-			const label = `[DefaultChainedCredential] ${Credential.name}`;
+			const label = `[ChainedCredential] ${Credential.name}`;
 			let start: number | undefined;
 			if (debug) {
 				start = Date.now();
