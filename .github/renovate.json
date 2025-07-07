@@ -1,4 +1,10 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": ["github>takodotid/renovate-config"]
+	"extends": ["github>takodotid/renovate-config"],
+	"packageRules": [
+		{
+			"matchPackageNames": ["node"],
+			"enabled": false
+		}
+	]
 }
