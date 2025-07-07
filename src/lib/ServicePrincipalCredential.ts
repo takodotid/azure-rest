@@ -97,8 +97,10 @@ export class ServicePrincipalCredential implements AzureCredential {
 			const data = (await response.json()) as OAuth2TokenResponse;
 
 			return {
-				token: data.access_token,
-				expiresAt: new Date(Date.now() + data.expires_in * 1_000)
+				accessToken: data.access_token,
+				clientId: data.client_id ?? this.options.clientId,
+				expiresAt: new Date(Date.now() + data.expires_in * 1_000),
+				tokenType: data.token_type
 			};
 		} catch (error) {
 			throw new Error(`Failed to get token: ${(error as Error).stack}`);

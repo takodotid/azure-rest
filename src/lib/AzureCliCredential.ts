@@ -103,15 +103,17 @@ export class AzureCliCredential implements AzureCredential {
 		const expiresOnTimestamp = Number.parseInt(response.expires_on, 10) * 1_000;
 		if (!Number.isNaN(expiresOnTimestamp)) {
 			return {
-				token,
-				expiresAt: new Date(expiresOnTimestamp)
+				accessToken: token,
+				expiresAt: new Date(expiresOnTimestamp),
+				tokenType: response.tokenType
 			};
 		}
 
 		// fallback to the older expiresOn - an RFC3339 date string
 		return {
-			token,
-			expiresAt: new Date(response.expiresOn)
+			accessToken: token,
+			expiresAt: new Date(response.expiresOn),
+			tokenType: response.tokenType
 		};
 	}
 

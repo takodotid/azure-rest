@@ -49,8 +49,10 @@ export class ManagedIdentityCredential implements AzureCredential {
 
 		const data = (await response.json()) as OAuth2TokenResponse;
 		return {
-			token: data.access_token,
-			expiresAt: new Date(data.expires_on ? Number(data.expires_on) * 1000 : Date.now() + 60 * 60 * 1000) // fallback 1h
+			accessToken: data.access_token,
+			clientId: data.client_id,
+			expiresAt: new Date(data.expires_on ? Number(data.expires_on) * 1000 : Date.now() + 60 * 60 * 1000), // fallback 1h
+			tokenType: data.token_type
 		};
 	}
 

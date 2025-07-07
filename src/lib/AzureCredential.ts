@@ -1,7 +1,7 @@
 /**
  * Represents an Azure access token and its expiration.
  */
-export type AzureToken = { token: string; expiresAt: Date };
+export type Credential = { accessToken: string; clientId?: string; expiresAt: Date; tokenType: string };
 
 /**
  * Abstract credential class for acquiring Azure tokens.
@@ -13,5 +13,5 @@ export abstract class AzureCredential {
 	 * @param scope The resource or scope for which the token is requested
 	 * @returns A promise resolving to an AzureToken
 	 */
-	public abstract getToken(scope: string): Promise<AzureToken>;
+	public abstract getToken(scope: string): Promise<Credential>;
 }
