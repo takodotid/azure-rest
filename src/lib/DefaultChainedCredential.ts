@@ -21,10 +21,26 @@ export class DefaultChainedCredential implements AzureCredential {
 	 */
 	public async getToken(scope: string) {
 		const errors: { name: string; error: Error }[] = [];
+		const debug = process.env.DEBUG?.includes("tako-azure-rest:credentials") || process.env.DEBUG?.includes("tako-azure-rest:*");
 		for (const Credential of credentialChain) {
+			const label = `[DefaultChainedCredential] ${Credential.name}`;
+			let start: number | undefined;
+			if (debug) {
+				start = Date.now();
+				console.log(`${label} - trying...`);
+			}
 			try {
-				return await Credential.fromEnv().getToken(scope);
+				const result = await Credential.fromEnv().getToken(scope);
+				if (debug && start !== undefined) {
+					const ms = Date.now() - start;
+					console.log(`${label} - success in ${ms}ms`);
+				}
+				return result;
 			} catch (error) {
+				if (debug && start !== undefined) {
+					const ms = Date.now() - start;
+					console.log(`${label} - failed in ${ms}ms: ${(error as Error).message}`);
+				}
 				errors.push({ error: error as Error, name: Credential.name });
 			}
 		}
