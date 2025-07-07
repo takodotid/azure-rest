@@ -34,10 +34,9 @@ export class ManagedIdentityCredential implements AzureCredential {
 	public async getToken(scope: string) {
 		const endpoint = this.options.identityEndpoint || "http://169.254.169.254/metadata/identity/oauth2/token";
 		const apiVersion = "2018-02-01";
-		const params = new URLSearchParams({
-			resource: scope.replace(".default", ""),
-			apiVersion
-		});
+		const params = new URLSearchParams();
+		params.set("api-version", apiVersion);
+		params.set("resource", scope.replace(".default", ""));
 		if (this.options.clientId) {
 			params.set("client_id", this.options.clientId);
 		}
