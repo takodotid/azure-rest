@@ -21,17 +21,20 @@
 		}
 	],
 	"type": "module",
-	"main": "dist/index.js",
 	"exports": {
 		".": {
 			"import": "./dist/index.js",
 			"require": "./dist/index.cjs"
 		}
 	},
+	"main": "dist/index.js",
+	"files": [
+		"dist"
+	],
 	"scripts": {
+		"build": "tsc && tsup",
 		"check": "biome check",
-		"check:ci": "biome ci",
-		"build": "tsc && tsup"
+		"check:ci": "biome ci"
 	},
 	"commitlint": {
 		"extends": [
@@ -53,8 +56,8 @@
 		"tsup": "^8.5.0",
 		"typescript": "^5.8.3"
 	},
+	"packageManager": "pnpm@10.12.4",
 	"engines": {
 		"node": ">=20.0.0"
-	},
-	"packageManager": "pnpm@10.12.4"
+	}
 }
