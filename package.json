@@ -56,7 +56,7 @@
 		"@commitlint/config-conventional": "^19.8.1",
 		"@tsconfig/node-lts": "^22.0.2",
 		"@types/node": "^24.0.10",
-		"lefthook": "^1.11.16",
+		"lefthook": "^2.1.9",
 		"tsup": "^8.5.0",
 		"typescript": "^5.8.3"
 	},
