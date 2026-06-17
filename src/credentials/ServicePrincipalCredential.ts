@@ -103,7 +103,7 @@ export class ServicePrincipalCredential implements AzureCredential {
 				tokenType: data.token_type
 			};
 		} catch (error) {
-			throw new Error(`Failed to get token: ${(error as Error).stack}`);
+			throw new Error(`ServicePrincipalCredential: Failed to get token: ${(error as Error).message}`);
 		}
 	}
 

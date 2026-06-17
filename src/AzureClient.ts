@@ -99,13 +99,19 @@ export class AzureClient {
 	 * @throws If token refresh fails after max retries
 	 */
 	public async request(path: string, options?: RequestInit): Promise<Response> {
+		let lastError: unknown;
 		for (let i = 0; i <= AzureClient.MAX_TOKEN_RETRIES; i++) {
 			if (this.token && this.token.expiresAt > new Date()) break;
 			if (i === AzureClient.MAX_TOKEN_RETRIES) {
-				throw new Error("Failed to refresh token after multiple attempts");
+				throw new Error(`Failed to refresh token after ${AzureClient.MAX_TOKEN_RETRIES} attempts: ${(lastError as Error)?.message ?? "unknown error"}`);
 			}
-			await this.refreshToken();
+			// Back off before retrying (skip the wait on the first attempt).
 			if (i > 0) await new Promise(res => setTimeout(res, 100 * i));
+			try {
+				await this.refreshToken();
+			} catch (error) {
+				lastError = error;
+			}
 		}
 
 		if (!this.token) throw new Error("Token is unexpectedly null after refresh attempts");
