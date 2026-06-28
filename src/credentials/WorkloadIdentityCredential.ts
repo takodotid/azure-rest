@@ -35,6 +35,9 @@ export class WorkloadIdentityCredential implements AzureCredential {
 	 * @throws If the federated token file does not exist
 	 */
 	public async getToken(scope: string) {
+		if (!this.options.federatedTokenFile) {
+			throw new Error("WorkloadIdentityCredential: AZURE_FEDERATED_TOKEN_FILE is not set");
+		}
 		try {
 			const token = await readFile(this.options.federatedTokenFile, "utf-8");
 			const servicePrincipal = new ServicePrincipalCredential({ ...this.options, clientSecret: token, federated: true });

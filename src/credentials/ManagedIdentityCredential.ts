@@ -63,7 +63,7 @@ export class ManagedIdentityCredential implements AzureCredential {
 			if (err.name === "AbortError" || /Timed out/.test(err.message)) {
 				throw new Error(`ManagedIdentityCredential: Timed out after ${timeoutMs}ms waiting for metadata endpoint (${url})`);
 			}
-			throw err;
+			throw new Error(`ManagedIdentityCredential: Unable to connect to metadata endpoint: ${err.message}`);
 		}
 
 		if (!response.ok) {

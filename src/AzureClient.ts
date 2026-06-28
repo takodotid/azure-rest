@@ -24,12 +24,14 @@ export type AzureClientOptions = {
 export class AzureClient {
 	private static readonly MAX_TOKEN_RETRIES = 3;
 	private token: Credential | null = null;
+	private refreshPromise: Promise<void> | null = null;
 
 	/**
 	 * @param options Azure client configuration (baseUrl, credential, etc)
 	 */
 	constructor(public options: AzureClientOptions) {
 		Object.defineProperty(this, "token", { enumerable: false });
+		Object.defineProperty(this, "refreshPromise", { enumerable: false });
 	}
 
 	/**
@@ -99,20 +101,7 @@ export class AzureClient {
 	 * @throws If token refresh fails after max retries
 	 */
 	public async request(path: string, options?: RequestInit): Promise<Response> {
-		let lastError: unknown;
-		for (let i = 0; i <= AzureClient.MAX_TOKEN_RETRIES; i++) {
-			if (this.token && this.token.expiresAt > new Date()) break;
-			if (i === AzureClient.MAX_TOKEN_RETRIES) {
-				throw new Error(`Failed to refresh token after ${AzureClient.MAX_TOKEN_RETRIES} attempts: ${(lastError as Error)?.message ?? "unknown error"}`);
-			}
-			// Back off before retrying (skip the wait on the first attempt).
-			if (i > 0) await new Promise(res => setTimeout(res, 100 * i));
-			try {
-				await this.refreshToken();
-			} catch (error) {
-				lastError = error;
-			}
-		}
+		await this.ensureValidToken();
 
 		if (!this.token) throw new Error("Token is unexpectedly null after refresh attempts");
 
@@ -131,10 +120,41 @@ export class AzureClient {
 	}
 
 	/**
-	 * Refreshes the Azure access token using the provided credential helper.
+	 * Ensures a valid token is present, deduplicating concurrent refresh attempts.
+	 * All concurrent requests share one in-flight refresh — when it resolves or
+	 * rejects, all waiters continue together, freeing request slots immediately.
 	 * @private
 	 */
-	private async refreshToken(): Promise<void> {
-		this.token = await this.options.credential.helper.getToken(this.options.credential.scope);
+	private async ensureValidToken(): Promise<void> {
+		if (this.token && this.token.expiresAt > new Date()) return;
+
+		if (this.refreshPromise) {
+			await this.refreshPromise;
+			return;
+		}
+
+		this.refreshPromise = this.refreshWithRetry().finally(() => {
+			this.refreshPromise = null;
+		});
+
+		await this.refreshPromise;
+	}
+
+	/**
+	 * Attempts to refresh the token up to MAX_TOKEN_RETRIES times with backoff.
+	 * @private
+	 */
+	private async refreshWithRetry(): Promise<void> {
+		let lastError: unknown;
+		for (let i = 0; i < AzureClient.MAX_TOKEN_RETRIES; i++) {
+			if (i > 0) await new Promise<void>(res => setTimeout(res, 100 * i));
+			try {
+				this.token = await this.options.credential.helper.getToken(this.options.credential.scope);
+				return;
+			} catch (error) {
+				lastError = error;
+			}
+		}
+		throw new Error(`Failed to refresh token after ${AzureClient.MAX_TOKEN_RETRIES} attempts: ${(lastError as Error)?.message ?? "unknown error"}`);
 	}
 }
