@@ -11,10 +11,10 @@ jobs:
         runs-on: ubuntu-24.04
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4.2.2
+              uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
             - name: Setup pnpm
-              uses: pnpm/action-setup@v4.1.0
+              uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
 
             - name: Setup Node.js
               uses: actions/setup-node@v4.4.0
