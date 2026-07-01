@@ -32,6 +32,7 @@ export type OAuth2TokenResponse = {
  * @property tenantId - The Azure AD tenant ID.
  * @property authorityHost - (Optional) The Azure AD authority host. Defaults to "https://login.microsoftonline.com".
  * @property federated - Whether to use federated (JWT) auth. If true, clientSecret is treated as a JWT assertion.
+ * @property timeoutMs - (Optional) Timeout in milliseconds for the token request. Defaults to 30_000ms.
  */
 export type ServicePrincipalCredentialOption = {
 	clientId: string;
@@ -39,6 +40,7 @@ export type ServicePrincipalCredentialOption = {
 	tenantId: string;
 	authorityHost?: string;
 	federated: boolean;
+	timeoutMs?: number;
 };
 
 /**
@@ -61,6 +63,10 @@ export class ServicePrincipalCredential implements AzureCredential {
 
 		// Remove trailing slash from identityAuthorityHost
 		const url = [this.options.authorityHost?.replace(/\/$/, "") ?? "https://login.microsoftonline.com", `${this.options.tenantId}/oauth2/v2.0/token`].join("/");
+
+		const timeoutMs = this.options.timeoutMs ?? 30_000;
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
 		try {
 			const searchParams = {
@@ -87,7 +93,8 @@ export class ServicePrincipalCredential implements AzureCredential {
 					Accept: "application/json",
 					"Content-Type": "application/x-www-form-urlencoded"
 				},
-				body: new URLSearchParams(searchParams)
+				body: new URLSearchParams(searchParams),
+				signal: controller.signal
 			});
 
 			if (!response.ok) {
@@ -103,7 +110,12 @@ export class ServicePrincipalCredential implements AzureCredential {
 				tokenType: data.token_type
 			};
 		} catch (error) {
+			if ((error as Error).name === "AbortError") {
+				throw new Error(`ServicePrincipalCredential: Request timed out after ${timeoutMs}ms`);
+			}
 			throw new Error(`ServicePrincipalCredential: Failed to get token: ${(error as Error).message}`);
+		} finally {
+			clearTimeout(timeout);
 		}
 	}
 
@@ -122,7 +134,8 @@ export class ServicePrincipalCredential implements AzureCredential {
 			clientId: process.env.AZURE_CLIENT_ID,
 			clientSecret: process.env.AZURE_CLIENT_SECRET,
 			tenantId: process.env.AZURE_TENANT_ID,
-			federated: process.env.AZURE_USE_FEDERATED_AUTH === "true"
+			federated: process.env.AZURE_USE_FEDERATED_AUTH === "true",
+			timeoutMs: process.env.AZURE_SP_TIMEOUT_MS ? Number.parseInt(process.env.AZURE_SP_TIMEOUT_MS) : undefined
 		});
 	}
 }
@@ -134,6 +147,7 @@ declare global {
 			AZURE_CLIENT_SECRET: string;
 			AZURE_TENANT_ID: string;
 			AZURE_USE_FEDERATED_AUTH: "true" | "false"; // Optional, defaults to "false"
+			AZURE_SP_TIMEOUT_MS?: string; // Optional: custom timeout for token fetch in milliseconds
 		}
 	}
 }
